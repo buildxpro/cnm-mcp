@@ -1,0 +1,40 @@
+name: Cut Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version tag (example: v0.0.2)"
+        required: true
+      notes:
+        description: "Release notes"
+        required: false
+        default: "Deploy milestone release"
+  repository_dispatch:
+    types: [deploy_milestone]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create release tag and GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ github.event.inputs.version || github.event.client_payload.version }}
+          NOTES: ${{ github.event.inputs.notes || github.event.client_payload.notes || 'Deploy milestone release' }}
+          TARGET: ${{ github.event.client_payload.target || github.ref_name }}
+        run: |
+          if [ -z "$VERSION" ]; then
+            echo "Missing version input"
+            exit 1
+          fi
+
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "Release $VERSION already exists"
+            exit 0
+          fi
+
+          gh release create "$VERSION" --target "$TARGET" --title "$VERSION" --notes "$NOTES"
