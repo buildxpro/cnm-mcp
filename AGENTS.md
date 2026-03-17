@@ -90,3 +90,11 @@ npx cnm-mcp          # Via bin entry
 - Cloudflare Bot Fight Mode blocks direct local requests - use proxy mode
 - `subscription_id=8` = "Claim Listing" (free tier)
 - `active=2` = public listing, `active=1` = hidden
+
+## Convex + Clerk Baseline (2026-03)
+
+- Default stack for active BuildX products: Convex for app data and Clerk for authentication.
+- Keep `/sign-in` and `/sign-up` routes available (or explicit redirects) in every web app.
+- Client-safe env vars: `VITE_CONVEX_URL`/`NEXT_PUBLIC_CONVEX_URL` and Clerk publishable keys.
+- Server-only secrets: `CLERK_SECRET_KEY`, `CONVEX_DEPLOY_KEY`, provider API keys.
+- Treat legacy Supabase-only auth/data paths as migration/backfill scope, not net-new architecture.
